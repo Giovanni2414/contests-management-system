@@ -169,13 +169,12 @@ app.post("/createTeam", async (req, res) => {
     }
 })
 
-app.post("/deleteTeam", (req, res) => {
-    let teamObjectsTemp = []
-    for (let i = 0; i < teamObjects.length; i++) {
-        if (teamObjects[i].id != req.body.teamId)
-            teamObjectsTemp.push(teamObjects[i])
-    }
-    teamObjects = teamObjectsTemp;
+app.post("/deleteTeam", async (req, res) => {
+    teamId = req.body.teamId;
+    
+    let r1 = await pool.query("DELETE FROM usuario_equipo WHERE codigo_equipo = $1", [teamId]);
+    let r2 = await pool.query("DELETE FROM equipo WHERE codigo_equipo = $1", [teamId]);
+
     res.redirect("http://localhost:3000/teams/teams");
 })
 
@@ -197,16 +196,16 @@ app.post("/addIntegrant", async (req, res) => {
     res.redirect(path);
 })
 
-app.post("/deleteIntegrant", (req, res) => {
+app.post("/deleteIntegrant", async (req, res) => {
     let email = req.body.email;
     let idTeam = req.body.teamId;
-    let tempTeamUser = []
-    for(c = 0; c < teamUser.length; c++) {
-        if(teamUser[c].userEmail != email && teamUser[c].idTeam != idTeam) {
-            tempTeamUser.push(teamUser[c]);
-        }
+    
+    let response = await pool.query("SELECT * FROM usuario_equipo WHERE codigo_equipo = $1 AND correouser = $2", [idTeam, emailLogged]);
+    if((await response).rows.length > 0) {
+        console.log("Se elimina");
+        let response = await pool.query("DELETE FROM usuario_equipo WHERE codigo_equipo = $1 AND correouser = $2", [idTeam, email]);
     }
-    teamUser = tempTeamUser;
+
     let path = "http://localhost:3000/teams/" + idTeam;
     res.redirect(path);
 })
@@ -345,7 +344,9 @@ app.get("/list", (req, res) => {
     res.send(usersObjects);
 })
 
-
+app.get("/getEmailLogged", (req, res) => {
+    res.send(emailLogged.toString());
+})
 
 
 

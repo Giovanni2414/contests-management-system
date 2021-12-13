@@ -5,12 +5,11 @@ import Link from 'next/Link'
 
 let idGeneral = 0
 
-export default function home({ integrants }) {
+export default function home({ integrants, emailLogged }) {
 
     const router = useRouter()
     let teamId = router.query.team
     idGeneral = teamId
-    console.log(teamId)
 
     return (
 
@@ -74,11 +73,15 @@ export default function home({ integrants }) {
                                 {e.country}
                             </td>
                             <td>
-                            <form method="POST" action="http://localhost:8080/deleteIntegrant">
-                                <input type="hidden" id="teamId" name="teamId" value={teamId} />
-                                <input type="hidden" id="email" name="email" value={e.email} />
-                                    <input type="submit" className="btn btn-danger m-auto" value="Eliminar"/>
-                                </form>
+                                {
+                                    e.email == emailLogged
+                                    ? <div></div>
+                                    : <form method="POST" action="http://localhost:8080/deleteIntegrant">
+                                    <input type="hidden" id="teamId" name="teamId" value={teamId} />
+                                    <input type="hidden" id="email" name="email" value={e.email} />
+                                        <input type="submit" className="btn btn-danger m-auto" value="Eliminar"/>
+                                    </form>
+                                }
                             </td>
                         </tr>
                     ))}
@@ -95,5 +98,8 @@ home.getInitialProps = async () => {
     const response = await fetch('http://localhost:8080/integrants/'+idGeneral)
     //console.log(idGeneral)
     const integrants = await response.json()
-    return { integrants: integrants }
+    const response2 = await fetch('http://localhost:8080/getEmailLogged');
+    const emailLogged = await response2;
+    console.log(emailLogged)
+    return { integrants: integrants, emailLogged : emailLogged }
 }
