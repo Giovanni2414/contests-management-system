@@ -101,7 +101,7 @@ export default function Contests() {
                   grouping: true,
                   filtering: true,
                   exportButton: true,
-                }}
+                }}/*
                 editable={{
                   onRowAdd:(newRow)=> new Promise ((resolve,reject)=>{
                     setTableData([...tableData,newRow])
@@ -119,10 +119,10 @@ export default function Contests() {
                     setTableData(updateData)
                     resolve();
                   })
-                }}
-				onRowClick={(e, rowData) => {
+                }}*/
+			/*	onRowClick={(e, rowData) => {
 					router.push("/contest/" + rowData.codigo_competencia)
-				}}
+				}}*/
                 />
             
           </div>
